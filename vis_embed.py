@@ -42,16 +42,16 @@ def visualize_filters(model):
     filter_count_per_row = 7
     rows = 4
     fig, axes = plt.subplots(rows, filter_count_per_row, figsize=(filter_count_per_row * 2, rows * 2))
+    fig.suptitle('RGB embedding filters\n(first 28 principal components)', fontsize=16, y=0.95)
     for i, ax in enumerate(axes.flat):
         if i < 28:
             adjusted_image = adjust_contrast(pca_result_reshaped[i].transpose((1, 2, 0)))
             ax.imshow(adjusted_image, cmap='gray')
         ax.axis('off')
-    print('Visualizing filters...')
     plt.show()
 
 if __name__ == '__main__':
     model = vision_transformer.vit_small_patch16_224()
-    pre_train_dict = torch.load('vit_small_patch16_224_cifar100_pretrain.pth')
+    pre_train_dict = torch.load('vit_small_patch16_224_cifar100_pretrain.pth', map_location=torch.device('cpu'))
     model.load_state_dict(pre_train_dict)
     visualize_filters(model)

@@ -35,6 +35,6 @@ def visualize_cosine_similarity(pos_embed):
     plt.show()
 
 if __name__ == '__main__':
-    model_weights = torch.load('vit_small_patch16_224_cifar100_pretrain.pth')
-    pos_embed = model_weights['position_embedding'].squeeze()[1:].cpu().numpy().reshape(14, 14, 384)
+    model = torch.load('vit_small_patch16_224_cifar100_pretrain.pth', map_location=torch.device('cpu'))
+    pos_embed = model['position_embedding'].squeeze()[1:].cpu().numpy().reshape(14, 14, 384)
     visualize_cosine_similarity(pos_embed)
