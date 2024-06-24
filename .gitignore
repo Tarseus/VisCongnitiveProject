@@ -1,0 +1,7 @@
+data/
+
+vit_small_patch16_224_cifar100_scratch.pth
+
+vit_small_patch16_224_in1k.pth
+
+vit_small_patch16_224.pth
