@@ -23,8 +23,8 @@ def visualize_cosine_similarity(pos_embed):
             axes[i, j].set_yticks([])
             axes[i, j].set_aspect('equal')
     cbar_ax = fig.add_axes([0.88, -0.5, 0.05, 2])
-    sns.heatmap(np.array([[-1,1]]), cmap='viridis', cbar=True, ax=cbar_ax, cbar_kws={'label': 'Cosine similarity'}, vmin=-1, vmax=1)
-    cbar_ax.set_visible(False)
+    sns.heatmap(np.array([[-1,1]]), cmap='viridis', cbar=False, ax=cbar_ax, cbar_kws={'label': 'Cosine similarity'}, vmin=-1, vmax=1)
+    # cbar_ax.set_visible(False)
     fig.text(0.5, 0.04, 'Input patch column', ha='center', va='center', fontsize=16)
     fig.text(0.04, 0.5, 'Input patch row', ha='center', va='center', rotation='vertical', fontsize=16)
     for ax, col in zip(axes[-1], range(1, 15)):

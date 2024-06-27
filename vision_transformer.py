@@ -10,6 +10,13 @@ def to_2tuple(x):
         return tuple(x)
     return tuple(repeat(x, 2))
 
+def scaled_dot_product_attention(q, k, v):
+    matmul_qk = torch.matmul(q, k.transpose(-2, -1))
+    scale = q.size(-1) ** -0.5
+    attn = torch.softmax(matmul_qk * scale, dim=-1)
+    output = torch.matmul(attn, v)
+    return output, attn
+
 class PatchEmbedding(nn.Module):
     def __init__(self,
                  image_size = 224,
@@ -43,10 +50,11 @@ class Attention(nn.Module):
         B, N, C = x.shape
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv.unbind(0)
-        x = F.scaled_dot_product_attention(q, k, v)
+        x, attn = scaled_dot_product_attention(q, k, v)
+        # print(attn.shape)
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
-        return x
+        return x, attn
 
 class Mlp(nn.Module):
     def __init__(self,
@@ -78,9 +86,10 @@ class TransformerBlock(nn.Module):
         self.mlp = Mlp(in_features=dim,hidden_features=int(dim * mlp_ratio))
 
     def forward(self, x):
-        x = x + self.attn(self.norm1(x))
+        att_embd, attn = self.attn(self.norm1(x))
+        x = x + att_embd
         x = x + self.mlp(self.norm2(x))
-        return x
+        return x, attn
 
 class CustomVisionTransformer(nn.Module):
     def __init__(self,
@@ -126,13 +135,17 @@ class CustomVisionTransformer(nn.Module):
         return x
 
     def forward(self, x):
+        attn_weight_list = []
         x = self.patch_embedding(x)
         x = self.apply_position_embedding(x)
-        x = self.transformer_blocks(x)
+        # x = self.transformer_blocks(x)
+        for transformer_block in self.transformer_blocks:
+            x, attn_weight = transformer_block(x)
+            # attn_weight_list.append(attn_weight)
         x = self.normalization(x)
         x = x[:, 0]
         x = self.output_head(x)
-        return x
+        return x, attn_weight
     
 def vit_small_patch16_224():
     model = CustomVisionTransformer(patch_size=16,

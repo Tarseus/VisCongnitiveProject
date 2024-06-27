@@ -51,9 +51,7 @@ if __name__ == '__main__':
 
     testset = datasets.CIFAR100(root='./data', train=False, download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False, num_workers=2)
-
     model.to(device)
-
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     with open('training_results.csv', 'w', newline='') as file:
