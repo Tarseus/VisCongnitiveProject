@@ -60,9 +60,8 @@ if __name__ == '__main__':
     for epoch in range(10):
         model.train()
         running_loss = 0.0
-        correct_train = 0  # 新增：用于跟踪训练集上的正确预测数
-        total_train = 0  # 新增：用于跟踪训练集上的总样本数
-        # 使用tqdm来包装enumerate，添加进度条
+        correct_train = 0
+        total_train = 0
         for i, data in tqdm(enumerate(trainloader, 0), total=len(trainloader)):
             inputs, labels = data[0].to(device), data[1].to(device)
             optimizer.zero_grad()
@@ -72,12 +71,12 @@ if __name__ == '__main__':
             optimizer.step()
             running_loss += loss.item()
 
-            _, predicted = torch.max(outputs.data, 1)  # 新增：获取最大概率的预测结果
-            total_train += labels.size(0)  # 新增：累加批次中的样本数
-            correct_train += (predicted == labels).sum().item()  # 新增：累加正确预测的数量
+            _, predicted = torch.max(outputs.data, 1)
+            total_train += labels.size(0)
+            correct_train += (predicted == labels).sum().item()
 
         avg_loss = running_loss / len(trainloader)
-        train_accuracy = 100 * correct_train / total_train  # 新增：计算训练集上的准确率
+        train_accuracy = 100 * correct_train / total_train
 
         model.eval()
         correct = 0
